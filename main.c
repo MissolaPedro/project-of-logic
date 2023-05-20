@@ -3,28 +3,24 @@
 #include <string.h>
 #include <stdbool.h>
 
-struct armazem
-{
+struct armazem{
     char produto[5000][200];
     int qtdestoque[5000][1];
     int indice[5000][1];
 };
 
-void indice()
-{
+void indice(){
     struct armazem arm;
     memset(arm.indice, 0, sizeof(arm.indice));
 
-    for (int i = 0; i < 5000; i++)
-    {
+    for (int i = 0; i < 5000; i++){
         arm.indice[i][0] = i;
     }
 }
 
 void decisaocontinuar();
 
-void cadastro()
-{
+void cadastro(){
     struct armazem arm;
     int qtd;
 
@@ -43,8 +39,7 @@ void cadastro()
     decisaocontinuar();
 }
 
-void remover()
-{
+void remover(){
     struct armazem arm;
     char produto[200];
     int options = -10, qtd, pos;
@@ -52,29 +47,24 @@ void remover()
     printf("Deseja remover qual produto? ");
     scanf(" %s", produto);
 
-    for (int l = 0; l < 5000; l++)
-    {
+    for (int l = 0; l < 5000; l++){
         options = strcmp(produto, arm.produto[l]);
-        if (options == 0)
-        {
+        if (options == 0){
             pos = l;
             break;
         }
     }
 
-    if (options == -10)
-    {
+    if (options == -10){
         printf("\n");
         printf("Produto nao encontrado.");
         printf("\n");
     }
-    else if (options == 0)
-    {
+    else if (options == 0){
         printf("Produto encontrado.\n");
         printf("Qual a quantidade que deseja remover? ");
         scanf("%i", &qtd);
-        if (qtd != 0)
-        {
+        if (qtd != 0){
             arm.qtdestoque[pos][0] -= qtd;
         }
     }
@@ -82,8 +72,7 @@ void remover()
     decisaocontinuar();
 }
 
-void decisaocontinuar()
-{
+void decisaocontinuar(){
     int options;
     printf("\n");
     printf("Deseja continuar a gerenciar o estoque? ");
@@ -92,19 +81,16 @@ void decisaocontinuar()
     printf("\nSelecione uma opcao: ");
     scanf("%i", &options);
 
-    if (options == 1)
-    {
+    if (options == 1){
         printf("\n");
-        return; // Retorna para a função chamadora (cadastro ou remover)
+        return; 
     }
-    else if (options == 2)
-    {
+    else if (options == 2){
         exit(0);
     }
 }
 
-int main()
-{
+int main(){
     while (true)
     {
         int option;
@@ -118,8 +104,7 @@ int main()
         printf("\nSelecione uma opcao: ");
         scanf("%i", &option);
 
-        switch (option)
-        {
+        switch (option){
         case 1:
             printf("\n");
             printf("Opcao selecionada: ");
@@ -160,6 +145,5 @@ int main()
             break;
         }
     }
-
     return 0;
 }
