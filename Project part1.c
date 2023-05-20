@@ -91,16 +91,17 @@ void decisaocontinuar(){
 
     if(options == 1){
         main();
+    }else if(options == 2){
+        exit(0);
     }
 }
 
 //Cadastro: sera realizado o cadastro dos nomes dos objetos e quantidade de cada um.
 void cadastro(int *verifi){
     struct armazem arm;
+    int qtd;
+
     if(*verifi == 1){
-        printf("\n");
-        int qtd;
-        
         printf("\nQuantos produtos deseja cadastrar? ");
         scanf("%i",&qtd);
 
