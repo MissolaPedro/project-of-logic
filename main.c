@@ -3,147 +3,142 @@
 #include <string.h>
 #include <stdbool.h>
 
-struct armazem{
-    char produto[5000][200];
-    int qtdestoque[5000][1];
-    int indice[5000][1];
-};
+#define MAX_PRODUTOS 5000
+#define TAM_NOME 200
 
-void indice(){
-    struct armazem arm;
-    memset(arm.indice, 0, sizeof(arm.indice));
+typedef struct {
+    char produto[TAM_NOME];
+    int qtdestoque;
+} Produto;
 
-    for (int i = 0; i < 5000; i++){
-        arm.indice[i][0] = i;
-    }
-}
+typedef struct {
+    Produto produtos[MAX_PRODUTOS];
+    int contador;
+} Armazem;
 
-void decisaocontinuar();
-
-void cadastro(){
-    struct armazem arm;
-    int qtd;
-
-    printf("\nQuantos produtos deseja cadastrar? ");
-    scanf("%i", &qtd);
-
-    for (int l = 0; l < qtd; l++)
-    {
-        printf("Produto: ");
-        scanf(" %s", arm.produto[l]);
-
-        printf("Quantidade: ");
-        scanf("%i", &arm.qtdestoque[l][0]);
+void cadastrarProduto(Armazem *armazem) {
+    if (armazem->contador >= MAX_PRODUTOS) {
+        printf("O armazem esta cheio. Nao e possivel cadastrar mais produtos.\n");
+        return;
     }
 
-    decisaocontinuar();
+    Produto novoProduto;
+
+    printf("Produto: ");
+    scanf(" %s", novoProduto.produto);
+
+    printf("Quantidade: ");
+    scanf("%i", &novoProduto.qtdestoque);
+
+    armazem->produtos[armazem->contador] = novoProduto;
+    armazem->contador++;
+
+    printf("Produto cadastrado com sucesso.\n");
 }
 
-void remover(){
-    struct armazem arm;
-    char produto[200];
-    int options = -10, qtd, pos;
+void removerProduto(Armazem *armazem) {
+    if (armazem->contador == 0) {
+        printf("O armazem esta vazio. Nao ha produtos para remover.\n");
+        return;
+    }
 
-    printf("Deseja remover qual produto? ");
-    scanf(" %s", produto);
+    char nome[TAM_NOME];
+    printf("Qual produto deseja remover? ");
+    scanf(" %s", nome);
 
-    for (int l = 0; l < 5000; l++){
-        options = strcmp(produto, arm.produto[l]);
-        if (options == 0){
-            pos = l;
-            break;
+    for (int i = 0; i < armazem->contador; i++) {
+        if (strcmp(nome, armazem->produtos[i].produto) == 0) {
+            int quantidade;
+            printf("Produto encontrado. Quantidade a remover: ");
+            scanf("%i", &quantidade);
+
+            if (quantidade <= armazem->produtos[i].qtdestoque) {
+                armazem->produtos[i].qtdestoque -= quantidade;
+                printf("Produto removido com sucesso.\n");
+            } else {
+                printf("Nao ha quantidade suficiente para remover.\n");
+            }
+
+            return;
         }
     }
 
-    if (options == -10){
-        printf("\n");
-        printf("Produto nao encontrado.");
-        printf("\n");
-    }
-    else if (options == 0){
-        printf("Produto encontrado.\n");
-        printf("Qual a quantidade que deseja remover? ");
-        scanf("%i", &qtd);
-        if (qtd != 0){
-            arm.qtdestoque[pos][0] -= qtd;
-        }
-    }
-
-    decisaocontinuar();
+    printf("Produto nao encontrado.\n");
 }
 
-void decisaocontinuar(){
-    int options;
-    printf("\n");
-    printf("Deseja continuar a gerenciar o estoque? ");
-    printf("\n1 - Sim.");
-    printf("\n2 - Nao.");
-    printf("\nSelecione uma opcao: ");
-    scanf("%i", &options);
-
-    if (options == 1){
-        printf("\n");
-        return; 
+void listarProdutos(const Armazem *armazem) {
+    if (armazem->contador == 0) {
+        printf("O armazem esta vazio. Nao ha produtos para listar.\n");
+        return;
     }
-    else if (options == 2){
-        exit(0);
+
+    printf("Produtos no armazem:\n");
+
+    for (int i = 0; i < armazem->contador; i++) {
+        printf("%d - %s (%d)\n", i + 1, armazem->produtos[i].produto, armazem->produtos[i].qtdestoque);
     }
 }
 
-int main(){
-    while (true)
-    {
-        int option;
-        printf("Opcoes de gerenciamento: ");
-        printf("\n1 - Cadastrar produtos.");
-        printf("\n2 - Remover produtos.");
-        printf("\n3 - Listar produtos.");
-        printf("\n4 - Conferir produtos.");
-        printf("\n5 - Sair.");
+void conferirProdutos(const Armazem *armazem) {
+    if (armazem->contador == 0) {
+        printf("O armazem esta vazio. Nao ha produtos para conferir.\n");
+        return;
+    }
 
-        printf("\nSelecione uma opcao: ");
-        scanf("%i", &option);
+    printf("Informe o numero do produto para conferir: ");
+    int numero;
+    scanf("%d", &numero);
 
-        switch (option){
-        case 1:
-            printf("\n");
-            printf("Opcao selecionada: ");
-            printf("\n1 - Cadastrar produtos.");
-            printf("\n");
-            cadastro();
-            break;
-        case 2:
-            printf("\n");
-            printf("Opcao selecionada: ");
-            printf("\n2 - Remover produtos.");
-            printf("\n");
-            remover();
-            break;
-        case 3:
-            printf("\n");
-            printf("Opcao selecionada: ");
-            printf("\n3 - Listar produtos.");
-            printf("\n");
-            // Implemente a funcionalidade de listar produtos
-            break;
-        case 4:
-            printf("\n");
-            printf("Opcao selecionada: ");
-            printf("\n4 - Conferir produtos.");
-            printf("\n");
-            // Implemente a funcionalidade de conferir produtos
-            break;
-        case 5:
-            printf("\n");
-            printf("Opcao selecionada: ");
-            printf("\n5 - Sair.");
-            printf("\n");
-            exit(0);
-            break;
-        default:
-            printf("Nenhuma opcao selecionada.\n");
-            break;
+    if (numero >= 1 && numero <= armazem->contador) {
+        const Produto *produto = &armazem->produtos[numero - 1];
+        printf("Produto: %s\nQuantidade em estoque: %d\n", produto->produto, produto->qtdestoque);
+    } else {
+        printf("Numero de produto invalido.\n");
+    }
+}
+
+int main() {
+    Armazem armazem;
+    armazem.contador = 0;
+
+    while (true) {
+        printf("\nOpcoes de gerenciamento:\n");
+        printf("1 - Cadastrar produtos\n");
+        printf("2 - Remover produtos\n");
+        printf("3 - Listar produtos\n");
+        printf("4 - Conferir produtos\n");
+        printf("5 - Sair\n");
+        printf("Selecione uma opcao: ");
+
+        int opcao;
+        scanf("%i", &opcao);
+
+        switch (opcao) {
+            case 1:
+                printf("\nOpcao selecionada: Cadastrar produtos\n");
+                cadastrarProduto(&armazem);
+                break;
+            case 2:
+                printf("\nOpcao selecionada: Remover produtos\n");
+                removerProduto(&armazem);
+                break;
+            case 3:
+                printf("\nOpcao selecionada: Listar produtos\n");
+                listarProdutos(&armazem);
+                break;
+            case 4:
+                printf("\nOpcao selecionada: Conferir produtos\n");
+                conferirProdutos(&armazem);
+                break;
+            case 5:
+                printf("\nOpcao selecionada: Sair\n");
+                exit(0);
+                break;
+            default:
+                printf("Nenhuma opcao selecionada.\n");
+                break;
         }
     }
+
     return 0;
 }
